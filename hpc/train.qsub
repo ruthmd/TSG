@@ -1,5 +1,5 @@
 #!/bin/bash
-#$ -l h_rt=32:00:00
+#$ -l h_rt=24:00:00
 #$ -l h_vmem=7.5G
 #$ -pe smp 12
 #$ -l gpu=1
@@ -23,4 +23,4 @@ module load java/1.8.0_382-openjdk
 source .venv/bin/activate
 
 # Run!
-python3 train_tsg.py --cfg ./tsg_configs/tsg-run.yml
+python3 train_tsg.py --cfg ./tsg_configs/andrena.yml
