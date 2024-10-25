@@ -11,6 +11,7 @@ input_json: /data/EECS-YuanLab/COCO/cocotalk.json
 input_label_h5: /data/EECS-YuanLab/COCO/cocotalk_label.h5
 input_att_dir: /data/EECS-YuanLab/COCO/butd_att/
 input_rela_dir: /data/EECS-YuanLab/COCO/coco_img_sg/
+cached_tokens: /data/EECS-YuanLab/COCO/coco-train-idxs
 seq_per_img: 5
 batch_size: 64
 learning_rate: 0.0005
