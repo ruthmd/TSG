@@ -28,12 +28,12 @@ class HybridLoader:
         self.db_path = db_path
         self.ext = ext
         if self.ext == ".npy":
-            # if self.db_path=='data/coco_pred_sg':
-            self.loader = lambda x: np.load(
-                x, allow_pickle=True, encoding="latin1"
-            ).item()
-            # else:
-            #     self.loader = lambda x: np.load(x,allow_pickle=True)
+            if "coco_pred_sg" in self.db_path or "coco_img_sg" in self.db_path:
+                self.loader = lambda x: np.load(
+                    x, allow_pickle=True, encoding="latin1"
+                ).item()
+            else:
+                self.loader = lambda x: np.load(x, allow_pickle=True)
         else:
             self.loader = lambda x: np.load(x, allow_pickle=True)["feat"]
         if db_path.endswith(".lmdb"):
@@ -207,7 +207,7 @@ class Dataset(data.Dataset):
             fc_batch.append(tmp_fc)
             att_batch.append(tmp_att)
 
-            # 见TSG.txt 6.1)
+            # See TSG.txt 6.1
             rela_matrix = tmp_rela["rela_matrix"]
             attr_matrix = tmp_rela["obj_attr"]
             rela_seq_len.append(len(rela_matrix) + len(attr_matrix))
@@ -379,7 +379,7 @@ class Dataset(data.Dataset):
         if self.use_fc:
             try:
                 fc_feat = self.fc_loader.get(str(self.info["images"][ix]["id"]))
-            except:
+            except Exception:
                 # Use average of attention when there is no fc provided (For bottomup feature)
                 fc_feat = att_feat.mean(0)
         else:
@@ -526,4 +526,3 @@ class MySampler(data.sampler.Sampler):
             "index_list": self._index_list,
             "iter_counter": self.iter_counter - prefetched_num,
         }
-

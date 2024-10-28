@@ -201,6 +201,9 @@ def train(opt):
     dp_lw_model.train()
 
     current_score = 0
+    sc_flag = False
+    struc_flag = False
+
     # Start training
     try:
         while True:
@@ -301,6 +304,7 @@ def train(opt):
 
                 # If start structure loss training
                 if opt.structure_after != -1 and epoch >= opt.structure_after:
+                    logging.info("Starting structured learning")
                     struc_flag = True
                     init_scorer(opt.cached_tokens)
                 else:
@@ -308,6 +312,7 @@ def train(opt):
 
                 epoch_done = False
 
+            # NOTE: Start of main training
             start = time.time()
             # Load data from train split (0)
             data = loader.get_batch("train")
@@ -470,6 +475,7 @@ def train(opt):
                 if best_val_score is None or current_score > best_val_score:
                     best_val_score = current_score
                     best_flag = True
+
             if iteration % opt.save_checkpoint_every == 0:
                 # Dump miscalleous informations
                 infos["best_val_score"] = best_val_score
