@@ -112,6 +112,9 @@ def train(opt):
     ##########################
     opt.vocab = loader.get_vocab()
     model = models.setup(opt).cuda()
+
+    logging.info(f"\nModel:\n{model}\n")
+
     del opt.vocab
     if opt.start_from is not None:
         model.load_state_dict(
@@ -140,8 +143,9 @@ def train(opt):
     if (
         opt.self_critical_after != -1
         or opt.structure_after != -1
+        or opt.structure_until !=-1
         and epoch >= opt.self_critical_after
-        and epoch >= opt.structure_after
+        and epoch >= opt.structure_after and epoch <= opt.structure_until
     ):
         opt.noamopt = opt.noamopt_rl
         opt.reduce_on_plateau = opt.reduce_on_plateau_rl
@@ -237,8 +241,8 @@ def train(opt):
                     reset_rl_optimzer_index = False
 
                 if (
-                    opt.structure_after != -1
-                    and epoch >= opt.structure_after
+                    opt.structure_after != -1 and opt.structure_until != -1
+                    and epoch >= opt.structure_after and epoch <= opt.structure_until
                     and reset_rl_optimzer_index
                 ):
                     opt.learning_rate_decay_start = opt.self_critical_after
@@ -294,13 +298,15 @@ def train(opt):
 
                 # If start self critical training
                 if opt.self_critical_after != -1 and epoch >= opt.self_critical_after:
+                    logging.info("\nStarting SCST RL-Finetuning\n")
                     sc_flag = True
                     init_scorer(opt.cached_tokens)
                 else:
                     sc_flag = False
 
                 # If start structure loss training
-                if opt.structure_after != -1 and epoch >= opt.structure_after:
+                if opt.structure_after != -1 and opt.structure_until!=-1 and epoch >= opt.structure_after and epoch <= opt.structure_until:
+                    logging.info("\nStarting structured learning\n")
                     struc_flag = True
                     init_scorer(opt.cached_tokens)
                 else:
@@ -493,3 +499,4 @@ opt = opts.parse_opt()
 os.environ["CUDA_VISIBLE_DEVICES"] = str(opt.gpu)
 # torch.cuda.set_device(opt.gpu)
 train(opt)
+logging.info("\nDone Training.")

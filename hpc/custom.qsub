@@ -26,4 +26,4 @@ module list
 source .venv/bin/activate
 
 # Run!
-python3 train_tsg.py --cfg ./tsg_configs/andrena.yml
+python3 train_tsg.py --cfg ./tsg_configs/custom.yml
